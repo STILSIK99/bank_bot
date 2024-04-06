@@ -1,0 +1,36 @@
+#pragma once
+
+#include <QString>
+#include <QDate>
+#include <QDebug>
+
+#include <map>
+
+#include "tools.h"
+
+namespace RECORDS{
+
+const QString DATE_IN = "ДатаПоступило";
+const QString DATE_OUT = "ДатаСписано";
+
+// std::vector<QString> FIELDS{};
+
+}
+
+class Record{
+    /*
+
+    Класс для работы с конкретной операцией из выписки.
+
+     */
+    std::map<QString, QString> *fields;
+
+public:
+    Record(std::map<QString, QString> *);
+    ~Record();
+    QString toHash_1();
+    QString toHash_2();
+    QDate getOperationDate();
+
+
+};
