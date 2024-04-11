@@ -34,24 +34,36 @@ void DataBase::query(const QString & request, int col,
     }while (sql.next());
 }
 
+void DataBase::close(){
+    dataBase.close();
+}
 
 //-----------------------------------PUBLIC------------------------------------
 
 bool DataBase::connect(const QString & _server, const QString & _user, const QString & _pass){
-    bool result = false;
-    dataBase->addDatabase(DATABASE::DRIVER);
-    dataBase->setHostName(_server);
-    // setDatabaseName();
-    dataBase->setUserName(_user);
-    dataBase->setPassword(_pass);
-    if (dataBase->open()){
-        result = createDataBase();
-    }
-    if (result){
+    QSqlDatabase db = QSqlDatabase::addDatabase(DATABASE::DRIVER);
+    db.setHostName(_server);
+    db.setDatabaseName(DATABASE::DATABASE_NAME);
+    db.setUserName(_user);
+    db.setPassword(_pass);
+    if (db.open()){
+        close();
+        dataBase = db;
         server = _server, user = _user, password = _pass;
+        return true;
+    } else {
+        qDebug() << db.lastError();
     }
-    return result;
+    return false;
     //возможно нужно setDatabaseName
+}
+
+bool DataBase::isConnected(){
+    return dataBase.isOpen();
+}
+
+DataBase::~DataBase(){
+    if (isConnected()) close();
 }
 
 //----------------------------------PRIVATE------------------------------------

@@ -3,22 +3,37 @@
 
 //-----------------------------------PUBLIC------------------------------------
 
-Record::Record(std::map<QString, QString> * _data){
+Record::Record(std::map<QString, QString> * _data, bool _direct){
     fields = _data;
+    direction = _direct;
 }
 
 Record::~Record(){
     delete fields;
 }
 
-QDate Record::getOperationDate(){
-    if (fields->count(RECORDS::DATE_IN)){
+QDate Record::getOperationDate() const {
+    if (direction){
         return TOOLS::extractDateFromRecord(fields->at(RECORDS::DATE_IN));
-    } else if (fields->count(RECORDS::DATE_OUT)){
+    } else {
         return TOOLS::extractDateFromRecord(fields->at(RECORDS::DATE_OUT));
     }
-    return QDate(1900, 1, 1);
 }
 
+long long Record::getSum() const {
+    auto sum = exctractSum();
+    if (!direction){
+        sum *= -1;
+    }
+    return sum;
+}
 //----------------------------------PRIVATE------------------------------------
 
+long long Record::exctractSum() const {
+    qDebug() << "Record::exctractSum";
+    if (!fields->count(RECORDS::OPERATION_SUM)) {
+        qDebug() << "Not found sum.";
+        return 0;
+    }
+    return TOOLS::exctractSum(fields->at(RECORDS::OPERATION_SUM));
+}

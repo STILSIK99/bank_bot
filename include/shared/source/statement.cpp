@@ -50,8 +50,7 @@ bool Statement::init(QByteArray * data){
         throw EXCEPTIONS::StatementException(EXCEPTIONS::STATE_FORMAT);
     }
 
-
-    return true;
+    return accounting();
 }
 
 QString* Statement::convertCodec(QByteArray *data){
@@ -65,6 +64,59 @@ QString* Statement::convertCodec(QByteArray *data){
 
 //----------------------------------PRIVATE------------------------------------
 
+bool Statement::accounting(){
+    /*
+     * Функция производит вычисления начального и конечного
+     * остатка на счету на каждый день, соответствующий выписке
+     *
+     */
+    qDebug() << "Statement::accounting";
+    if (!fields->count(STATEMENTS::START_SUM)){
+        qDebug() << "Start sum not found.";
+        return false;
+    }
+    if (!fields->count(STATEMENTS::FINISH_SUM)){
+        qDebug() << "Finish sum not found.";
+        return false;
+    }
+    if (!fields->count(STATEMENTS::CHANGES_ADD)){
+        qDebug() << "Add changes not found.";
+        return false;
+    }
+    if (!fields->count(STATEMENTS::CHANGES_MINUS)){
+        qDebug() << "Minus changes not found.";
+        return false;
+    }
+
+    auto    start = *dataByDate.begin(),
+            finish = *dataByDate.rbegin();
+    long long   all_add = 0,
+                all_minus = 0,
+                finish_sum = TOOLS::exctractSum(fields->at(STATEMENTS::FINISH_SUM));
+    start.second->start_sum = TOOLS::exctractSum(
+        fields->at(STATEMENTS::START_SUM));
+
+    for(auto it = dataByDate.begin(); it != dataByDate.end(); ++it){
+        static long long finish;
+        if (it != dataByDate.begin()) {
+            it->second->start_sum = finish;
+        }
+        finish = it->second->start_sum + it->second->changes;
+        it->second->finish_sum = finish;
+        all_add += it->second->all_add;
+        all_minus += it->second->all_minus;
+    }
+
+    if (all_add != TOOLS::exctractSum(fields->at(STATEMENTS::CHANGES_ADD)) ||
+        all_minus*(-1) != TOOLS::exctractSum(fields->at(STATEMENTS::CHANGES_MINUS))){
+        qDebug() << "Accounting error";
+        return false;
+    }
+
+    return finish.second->finish_sum == finish_sum;
+
+}
+
 std::pair<QString, QString> Statement::toPair(QString & str){
     auto line = str.split("=");
     if (line.length() < 2) return {line[0], ""};
@@ -76,13 +128,15 @@ std::pair<QString, QString> Statement::toPair(QString & str){
 
 int Statement::readBlock(int row, QStringList& array, const QString& stopString){
     std::map<QString, QString>  *current = new std::map<QString, QString>();
+    static QString number;  // номер счета
+    static bool direction;
     while(row < array.size()){
         if (array[row] == stopString){
             if (array[row] == STATEMENTS::ACCOUNT_FINISH){
                 fields = current;
             }
             if (array[row] == STATEMENTS::RECORD_FINISH){
-                auto record = new Record(current);
+                auto record = new Record(current, direction);
                 auto date = record->getOperationDate();
                 if (!dataByDate.count(date)){
                     dataByDate[date] = new DailyOperations(date);
@@ -92,6 +146,22 @@ int Statement::readBlock(int row, QStringList& array, const QString& stopString)
             return ++row;
         }
         current->insert(toPair(array[row]));
+        if (TOOLS::comparePrefix(array[row], STATEMENTS::ACCOUNT_NUMBER)){
+            auto data = array[row].split('=');
+            if (data.length() < 2){
+                qDebug() << "Error number";
+            } else {
+                number = data[1];
+            }
+        }
+        if (TOOLS::comparePrefix(array[row], STATEMENTS::PAYER_NUMBER)){
+            auto data = array[row].split('=');
+            if (data.length() < 2){
+                qDebug() << "Error number";
+            } else {
+                direction = !TOOLS::comparePrefix(data[1], number);
+            }
+        }
         ++row;
     }
     return row;

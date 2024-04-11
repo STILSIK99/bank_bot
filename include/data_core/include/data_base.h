@@ -14,7 +14,7 @@
 class DataBase : public QObject{
     Q_OBJECT
     QString server, user, password;
-    QSqlDatabase *dataBase;
+    QSqlDatabase dataBase;
 
 private:
     bool createDataBase();
@@ -22,7 +22,8 @@ private:
 
 public:
     bool connect(const QString &, const QString &, const QString &);
-
+    bool isConnected();
+    ~DataBase();
 
 public slots:
 
@@ -32,7 +33,7 @@ public slots:
     //запрос данных
     void query(const QString &, int col,
                std::vector<std::vector<QString>> &);
-    // void close();
+    void close();
 
 signals:
 

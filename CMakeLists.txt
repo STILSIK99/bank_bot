@@ -25,6 +25,7 @@ set(SHARED_HEADERS
     ${SHARED_INCLUDE_PATH}/exceptions.h
     ${SHARED_INCLUDE_PATH}/tools.h
     ${SHARED_INCLUDE_PATH}/daily_operations.h
+    ${SHARED_INCLUDE_PATH}/mail_account.h
 )
 set(SHARED_SOURCES
     ${SHARED_SOURCE_PATH}/statement.cpp
@@ -32,6 +33,18 @@ set(SHARED_SOURCES
     ${SHARED_SOURCE_PATH}/tools.cpp
     ${SHARED_SOURCE_PATH}/daily_operations.cpp
 )
+
+#-----include config core ---------------------------------------------------
+set(CFG_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/config_core/include")
+set(CFG_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/config_core/source")
+set(CFG_HEADERS
+    ${CFG_INCLUDE_PATH}/config_core.h
+    ${CFG_INCLUDE_PATH}/cfg_variables.h
+)
+set(CFG_SOURCES
+    ${CFG_SOURCE_PATH}/config_core.cpp
+)
+
 #-----include imap core------------------------------------------------------
 set(IMAP_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/imap/include")
 set(IMAP_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/imap/source/")
@@ -128,6 +141,7 @@ include_directories(
     "${PC_INCLUDE_PATH}"
     "${IMAP_INCLUDE_PATH}"
     "${SHARED_INCLUDE_PATH}"
+    "${CFG_INCLUDE_PATH}"
 )
 
 
@@ -146,6 +160,8 @@ add_executable(${PROJECT_NAME}
   ${IMAP_SOURCES}
   ${PC_HEADERS}
   ${PC_SOURCES}
+  ${CFG_HEADERS}
+  ${CFG_SOURCES}
 )
 
 #-----include Qt5 libs---------------------------------------

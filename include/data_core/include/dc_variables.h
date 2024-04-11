@@ -17,7 +17,7 @@ namespace DATABASE{
         const QString CREATE_DATABASE = "CREATE DATABASE IF NOT EXISTS %1";
         };
 
-    const QString DRIVER = "QMYSQL";
+    const QString DRIVER = "QMARIADB";
     const QString DATABASE_NAME = "bank_bot";
 
     };

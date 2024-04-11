@@ -10,7 +10,6 @@ private:
 
 public:
 
-
 public slots:
     // void processStatement();
 

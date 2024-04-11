@@ -11,7 +11,7 @@ bool TEST::testDecodeBase64(const QString & base64){
 }
 
 bool TEST::testParseStatement(){
-    QFile file("E:\\C++\\QT\\bank_bot\\bank_bot\\src\\kl_to_1c.txt");
+    QFile file("E:\\C++\\QT\\bank_bot\\bank_bot\\src\\Выписки\\KL_to_1C (3).txt");
     if (!file.open(QIODevice::ReadOnly)){
         qDebug() << "Error test Statement::init";
         return 0;
@@ -24,4 +24,25 @@ bool TEST::testParseStatement(){
     auto result = st.init(data);
     delete data;
     return result;
+}
+
+bool TEST::testDataBaseConnection(){
+    QString server = "127.0.0.1", user = "root", password = "root";
+    DataStorage *ds = new DataStorage;
+    auto result = ds->connect(server, user, password);
+    result = ds->isConnected();
+    delete ds;
+    return result;
+}
+
+bool TEST::testConfig(){
+    QString path = "E:/commerse/bankbot/src/config.json";
+    Config cfg(path);
+    try{
+        cfg.parseConfig();
+    } catch (std::exception e){
+        qDebug() << e.what();
+        return false;
+    }
+    return true;
 }

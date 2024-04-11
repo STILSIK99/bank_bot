@@ -14,7 +14,8 @@ struct DailyOperations{
      *
      */
 
-    long long start_sum, finish_sum;
+    long long start_sum = 0, finish_sum = 0, changes = 0;
+    long long all_add = 0, all_minus = 0;
     std::list<const Record *> data;
     QDate date;
 

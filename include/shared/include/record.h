@@ -10,8 +10,9 @@
 
 namespace RECORDS{
 
-const QString DATE_IN = "ДатаПоступило";
-const QString DATE_OUT = "ДатаСписано";
+const QString DATE_IN       = "ДатаПоступило";
+const QString DATE_OUT      = "ДатаСписано";
+const QString OPERATION_SUM = "Сумма";
 
 // std::vector<QString> FIELDS{};
 
@@ -24,13 +25,15 @@ class Record{
 
      */
     std::map<QString, QString> *fields;
+    bool direction; // true == + , false == -
+    long long exctractSum () const;
 
 public:
-    Record(std::map<QString, QString> *);
+    Record(std::map<QString, QString> *, bool);
     ~Record();
     QString toHash_1();
     QString toHash_2();
-    QDate getOperationDate();
-
+    QDate getOperationDate () const;
+    long long getSum() const ;
 
 };

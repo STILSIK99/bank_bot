@@ -4,6 +4,7 @@
 #include "parser_core.h"
 #include "test.h"
 #include "statement.h"
+#include "data_storage.h"
 #include <QObject>
 
 
@@ -22,11 +23,24 @@ int main(int argc, char *argv[])
 
     // qDebug() << "Working.";
 
-    if (TEST::testParseStatement()){
+    // if (TEST::testParseStatement()){
+    //     qDebug() << "OK";
+    // } else {
+    //     qDebug() << "NO";
+    // }
+
+    // if (TEST::testDataBaseConnection()){
+    //     qDebug() << "OK";
+    // } else {
+    //     qDebug() << "NO";
+    // }
+
+    if (TEST::testConfig()){
         qDebug() << "OK";
     } else {
         qDebug() << "NO";
     }
+
 
     return a.exec();
 }

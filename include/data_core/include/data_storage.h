@@ -11,6 +11,7 @@ private:
 public:
 
     bool init();
+    ~DataStorage() override;
 
 public slots:
 
@@ -18,7 +19,6 @@ public slots:
     // void addOperation();
     // void delOperation();
     void processStatement(Statement *);
-
 
 signals:
 

@@ -22,7 +22,13 @@ bool compareObjects(const QJsonObject &, const std::vector<QString> &);
 
 QString getLastLine(const QString &, int = 2);
 
+//exctract date value, str only '\d\d\.\d\d\.\d\d\d\d' format
 QDate extractDateFromRecord(const QString &);
+
+//exctract digit value, str only '[\d\.]+' format
+long long exctractSum(const QString &);
+
+// const std::map<QString, QString> extractVars(Config *, const QString &);
 
 }
 

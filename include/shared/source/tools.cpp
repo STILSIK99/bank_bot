@@ -61,6 +61,27 @@ QDate extractDateFromRecord(const QString & date){
     return QDate(1900, 1, 1);
 }
 
+long long exctractSum(const QString & digit){
+    long long sum = 0;
+    bool hasMinus = digit[0] == '-';
+    bool hasDot = false;
+    for(int i = 0; i < digit.length(); ++i){
+        if (digit[i] < '0' || digit[i] > '9') {
+            if (digit[i] != '.' || (i == 0 && digit[0] == '-'))
+                qDebug() << "Uncorrect symbol";
+            if (digit[i] == '.'){
+                hasDot = true;
+            }
+            continue;
+        }
+        sum *= 10;
+        sum += digit[i].digitValue();
+    }
+    if (hasMinus) sum *= -1;
+    if (!hasDot) sum *= 100;
+    return sum;
+}
+
 }
 
 
