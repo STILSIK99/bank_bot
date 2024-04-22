@@ -24,5 +24,6 @@ struct DailyOperations{
 
     void addRecord(const Record *);
 
+    void merge(const DailyOperations &);
 
 };

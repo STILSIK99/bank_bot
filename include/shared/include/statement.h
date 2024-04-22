@@ -48,7 +48,6 @@ class Statement{
      * Распределяет операции по дням.
      *
      */
-    std::map<QDate, DailyOperations *> dataByDate;
     std::map<QString, QString> *fields;
 
     std::pair<QString, QString> toPair(QString &);
@@ -62,6 +61,6 @@ public:
     ~Statement();
     QString getAccountNumber();
     static QString* convertCodec(QByteArray *);
-
+    std::map<QDate, DailyOperations *> dataByDate;
     bool init(QByteArray *);
 };

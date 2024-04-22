@@ -22,3 +22,7 @@ DailyOperations::~DailyOperations(){
         delete el;
     }
 }
+
+void DailyOperations::merge(const DailyOperations & _slave){
+
+}

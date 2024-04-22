@@ -25,13 +25,11 @@ public:
     bool isConnected();
     ~DataBase();
 
-public slots:
-
     //внесение изменений
-    void query(const QString &);
+    bool query(const QString &);
 
     //запрос данных
-    void query(const QString &, int col,
+    bool query(const QString &, int col,
                std::vector<std::vector<QString>> &);
     void close();
 

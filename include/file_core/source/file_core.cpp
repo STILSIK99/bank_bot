@@ -28,6 +28,13 @@ void FileCore::unzip(int id, QByteArray *zippedData){
 
 //-----------------------------------PUBLIC------------------------------------
 
+bool FileCore::init(const QString & path){
+    QDir dir(path);
+    if (!dir.exists()){
+        return dir.mkpath(path);
+    }
+    return true;
+}
 
 FileCore::FileCore(){
     QObject::connect(this, &FileDownloader::downloaded,

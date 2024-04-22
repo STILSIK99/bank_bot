@@ -15,6 +15,12 @@ QString convertFile(QByteArray inputText){
 
 }
 
+
+QString convertInsertion(QByteArray insertion){
+    return QTextCodec::codecForName("CP1251")->fromUnicode(
+        QTextCodec::codecForName("UTF-8")->toUnicode(insertion));
+}
+
 bool comparePrefix(const QString &a, const QString &b){
     for(int i = 0; i < std::min(a.length(), b.length()); ++i){
         if (a[i] != b[i]) return false;
@@ -80,6 +86,13 @@ long long exctractSum(const QString & digit){
     if (hasMinus) sum *= -1;
     if (!hasDot) sum *= 100;
     return sum;
+}
+
+QString toString(std::vector<QString> &data){
+    QString res = "";
+    for(auto el : data)
+        res += el + " ";
+    return res;
 }
 
 }

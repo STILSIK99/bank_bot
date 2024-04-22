@@ -3,8 +3,8 @@
 #include <QFile>
 
 #include "parser_core.h"
-#include "data_storage.h"
-#include "config_core.h"
+#include "data_core.h"
+#include "config.h"
 
 namespace TEST{
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "data_base.h"
 #include "statement.h"
+#include <vector>
+#include "tools.h"
 
 class DataStorage : public DataBase{
     Q_OBJECT
@@ -10,15 +12,13 @@ private:
 
 public:
 
-    bool init();
-    ~DataStorage() override;
+    static std::vector<QString> fields;
+    void initFields();
+    bool createTables();
+    void insertStartData();
 
 public slots:
 
-    // void readFull();
-    // void addOperation();
-    // void delOperation();
-    void processStatement(Statement *);
 
 signals:
 

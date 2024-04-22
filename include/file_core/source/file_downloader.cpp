@@ -1,6 +1,6 @@
 #include "file_downloader.h"
 
-//----------------------------PUBLIC SLOTS------------------------------
+//---------------------------------PUBLIC SLOTS--------------------------------
 
 void FileDownloader::downloadFromUrl(int id, QString url){
     qDebug() << "FileDownloader::downloadFromUrl";
@@ -39,7 +39,8 @@ void FileDownloader::downloadFinished(QNetworkReply * reply){
 
 FileDownloader::FileDownloader(){
     manager = new QNetworkAccessManager;
-    connect(manager, &QNetworkAccessManager::finished, this, &FileDownloader::downloadFinished);
+    connect(manager, &QNetworkAccessManager::finished,
+            this, &FileDownloader::downloadFinished);
 }
 
 FileDownloader::~FileDownloader(){

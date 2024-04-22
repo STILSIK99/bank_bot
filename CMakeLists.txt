@@ -26,12 +26,14 @@ set(SHARED_HEADERS
     ${SHARED_INCLUDE_PATH}/tools.h
     ${SHARED_INCLUDE_PATH}/daily_operations.h
     ${SHARED_INCLUDE_PATH}/mail_account.h
+    ${SHARED_INCLUDE_PATH}/bot_app.h
 )
 set(SHARED_SOURCES
     ${SHARED_SOURCE_PATH}/statement.cpp
     ${SHARED_SOURCE_PATH}/record.cpp
     ${SHARED_SOURCE_PATH}/tools.cpp
     ${SHARED_SOURCE_PATH}/daily_operations.cpp
+    ${SHARED_SOURCE_PATH}/bot_app.cpp
 )
 
 #-----include config core ---------------------------------------------------
@@ -39,10 +41,12 @@ set(CFG_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/config_core/include")
 set(CFG_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/config_core/source")
 set(CFG_HEADERS
     ${CFG_INCLUDE_PATH}/config_core.h
+    ${CFG_INCLUDE_PATH}/config.h
     ${CFG_INCLUDE_PATH}/cfg_variables.h
 )
 set(CFG_SOURCES
     ${CFG_SOURCE_PATH}/config_core.cpp
+    ${CFG_SOURCE_PATH}/config.cpp
 )
 
 #-----include imap core------------------------------------------------------

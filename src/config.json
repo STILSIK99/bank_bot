@@ -1,0 +1,26 @@
+{
+  "IMAP": {
+    "requestDelay": "5",
+    "include": "E:/commerse/bankbot/src/imap.json",
+	"saveMailDir": "E:/C++/QT/bank_bot/bank_bot/src/SaveData"
+  },
+  "Database": {
+    "server": "127.0.0.1",
+    "login": "root",
+    "password": "root",
+    "driver": "QMARIADB",
+    "database": "mytest"
+  },
+  "db": {
+      "Database": {
+        "server": "mariadb.redway.ru",
+        "login": "mariadb",
+        "password": "sIFkRZwWyEAjIuuckcaMjG7mZKcGKmKz",
+        "driver": "QMARIADB",
+        "database": "mariadb"
+      }
+  }
+
+
+
+}

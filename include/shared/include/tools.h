@@ -14,6 +14,9 @@ namespace TOOLS{
 //convert 1c file from CP1251 coding to UTF-8
 QString convertFile(QByteArray inputText);
 
+//convert from unicode to utf-8
+QString convertInsertion(QByteArray insertion);
+
 //compare begin of 2 strings
 bool comparePrefix(const QString &, const QString &);
 
@@ -29,6 +32,8 @@ QDate extractDateFromRecord(const QString &);
 long long exctractSum(const QString &);
 
 // const std::map<QString, QString> extractVars(Config *, const QString &);
+
+QString toString(std::vector<QString> &);
 
 }
 

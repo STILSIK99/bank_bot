@@ -32,15 +32,6 @@ void ControlCore::saved(int id){
     if (!--processed) initFinish();
 }
 
-
-
-ControlCore::ControlCore(){
-    isSessionFinished = true;
-    nextSession = false;
-    messageCount = 0;
-    processed = 0;
-}
-
 void ControlCore::startImap(){
     // получение сигнала, чтобы запустить новую сессию
     if (!isSessionFinished){
@@ -51,6 +42,13 @@ void ControlCore::startImap(){
     emit(updateListMessages());
 }
 //-----------------------------------PUBLIC------------------------------------
+
+ControlCore::ControlCore(){
+    isSessionFinished = true;
+    nextSession = false;
+    messageCount = 0;
+    processed = 0;
+}
 
 //----------------------------------PRIVATE------------------------------------
 

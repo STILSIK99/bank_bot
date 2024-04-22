@@ -6,7 +6,8 @@
 #include "statement.h"
 #include "data_storage.h"
 #include <QObject>
-
+#include <QThread>
+#include "bot_app.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,10 +36,15 @@ int main(int argc, char *argv[])
     //     qDebug() << "NO";
     // }
 
-    if (TEST::testConfig()){
-        qDebug() << "OK";
-    } else {
-        qDebug() << "NO";
+    // if (TEST::testConfig()){
+    //     qDebug() << "OK";
+    // } else {
+    //     qDebug() << "NO";
+    // }
+
+    BotApp *app = new BotApp();
+    if (!app->init()){
+        return -1;
     }
 
 

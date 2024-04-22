@@ -28,10 +28,9 @@ bool TEST::testParseStatement(){
 
 bool TEST::testDataBaseConnection(){
     QString server = "127.0.0.1", user = "root", password = "root";
-    DataStorage *ds = new DataStorage;
-    auto result = ds->connect(server, user, password);
-    result = ds->isConnected();
-    delete ds;
+    DataCore *dc = new DataCore;
+    auto result = dc->init(server, user, password);
+    delete dc;
     return result;
 }
 

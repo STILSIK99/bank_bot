@@ -1,68 +1,23 @@
 #pragma once
 
-#include <QObject>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
-
-#include <map>
+#include "config.h"
 #include <vector>
 
-#include "exceptions.h"
-#include "cfg_variables.h"
-#include "tools.h"
-#include "mail_account.h"
 
+class ConfigCore : public Config{
 
-class Config : public QObject{
-    /*
+private:
 
-    Класс для работы с файлом конфигурации:
-
-    - принимает на вход путь до файла;
-    - чтение конфигурации из файла;
-    - чтение параметра конфигурации;
-    - внесение изменений в файл конфигурации.
-
-    */
-
-    Q_OBJECT
-
-    std::map<QString, QString> parameters;
-    std::list<MailAccount*> emails;
-    QString path;
-
-    void encode(QByteArray &);  // для шифрования файла-конфигурации
-    void decode(QByteArray &);  // для расшифрования файла-конфигурации
-
-    // проверка валидности содержимого файла-конфигурации
-    bool verify(QJsonObject &, std::list<MailAccount*> &);
-
-    // чтение учетных данных для почтовых ящиков
-    bool readEmailsFromFile(const QString &, std::list<MailAccount*> &);
-
-    void readFull(QJsonObject &);
-
-    // QString toString() const;
-    //
-    MailAccount* emailFromJson(const QJsonObject &);
 
 public:
-    Config(const QString);
-    ~Config();
-
-    QString toString() const;
-    bool save();
-    void parseConfig();
-
+    ConfigCore(const QString &);
     const std::list<MailAccount *>& getListEmails();
+
+    std::vector<QString> getDatabase();
+
+    QString getSaveDir();
 
 public slots:
 
 
 };
-

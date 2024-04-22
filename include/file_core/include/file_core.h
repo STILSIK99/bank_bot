@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QObject>
 #include <QDebug>
+#include <QDir>
 
 #include "file_downloader.h"
 #include "file_unzip.h"
@@ -20,6 +21,7 @@ public:
     FileCore();
     ~FileCore();
 
+    bool init(const QString &);
     void readZip(const QString &);
 
 public slots:

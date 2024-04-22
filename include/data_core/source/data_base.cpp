@@ -2,16 +2,18 @@
 
 //--------------------------------PUBLIC SLOTS---------------------------------
 
-void DataBase::query(const QString & request){ //внесение изменений
+bool DataBase::query(const QString & request){ //внесение изменений
     qDebug() << "DataBase::query(QS)";
     QSqlQuery sql;
     if (!sql.exec(request)){
         qDebug() << sql.lastError().text();
         qDebug() << sql.executedQuery();
+        return false;
     }
+    return true;
 }
 
-void DataBase::query(const QString & request, int col,
+bool DataBase::query(const QString & request, int col,
         std::vector<std::vector<QString>> &result)
 {
     qDebug() << "DataBase::query(QS)";
@@ -21,8 +23,9 @@ void DataBase::query(const QString & request, int col,
     if (!sql.exec(request)){
         qDebug() << sql.lastError().text();
         qDebug() << sql.executedQuery();
+        return false;
     }
-    if (!sql.first()) return ;
+    if (!sql.first()) return true;
     static int row;
     row = 0;
     do {
@@ -32,6 +35,7 @@ void DataBase::query(const QString & request, int col,
         }
         ++row;
     }while (sql.next());
+    return true;
 }
 
 void DataBase::close(){
@@ -50,12 +54,12 @@ bool DataBase::connect(const QString & _server, const QString & _user, const QSt
         close();
         dataBase = db;
         server = _server, user = _user, password = _pass;
+        query("SET NAMES 'CP1251';");
         return true;
     } else {
         qDebug() << db.lastError();
     }
     return false;
-    //возможно нужно setDatabaseName
 }
 
 bool DataBase::isConnected(){
