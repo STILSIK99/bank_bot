@@ -32,6 +32,7 @@ void ParserCore::parseApplication(int id, QString data){
                     continue;
                 }
                 // qDebug () << "Base64: " << decodeBase64(id, exctractBase64(arr, mid, right - 1));
+                decodeBase64(id, exctractBase64(arr, mid, right - 1));
                 return;
             } else {
                 left = i;
@@ -50,21 +51,30 @@ void ParserCore::parseApplication(int id, QString data){
 
 void ParserCore::parseFile(int id, QByteArray *data){
     Statement *state = new Statement;
-    if (!state->init(data)){
-        emit(notFound(id));
-    } else {
-        emit(saveFile(
-            id, data,
-            generatePathToSave(state->getAccountNumber())
-        ));
-        emit(processStatement(state));
+    try{
+        if (!state->init(data)){
+            emit(notFound(id));
+            delete state;
+            delete data;
+        } else {
+            emit(saveFile(
+                id, data,
+                generatePathToSave(state->getAccountNumber())
+                ));
+            emit(processStatement(state));
+        }
+    } catch (...){
+        qDebug() << "Parsing error.";
+        delete state;
     }
 }
 
 
 //-------------------------------PUBLIC---------------------------------
 
-ParserCore::ParserCore(){}
+ParserCore::ParserCore(){
+    connect(this, &ParserCore::decodedBase64, this, &ParserCore::parseFile);
+}
 
 QString ParserCore::getFilename(const QString & line){
     static int preffix = PARSER::SEPARATOR::FILENAME.length();
@@ -74,18 +84,17 @@ QString ParserCore::getFilename(const QString & line){
 }
 
 QString ParserCore::generatePathToSave(const QString & accountNumber){
-    return QString("%1/%2/%3").arg(
-        pathToSave, //from cfg
+    return QString("%2/%3").arg(
         QCryptographicHash::hash ( //Номер банковского счета
-            accountNumber.toUtf8(),
+                accountNumber.toUtf8(),
             QCryptographicHash::Md5
-        ),
+            ).toHex().left(8),
         QCryptographicHash::hash( //Время обработки
             QDateTime::currentDateTime().toString(
-                "yyyy-MM-dd HH:mm:ss").toUtf8(),
+                "yyyy-MM-dd HH:mm:ss.zzz").toUtf8(),
             QCryptographicHash::Md5
-        )
-    );
+            ).toHex().left(8)
+        );
 }
 
 
@@ -131,7 +140,7 @@ bool ParserCore::decodeBase64(int id, const QString & data){
     try {
         auto decoded = new QByteArray(
             QByteArray::fromBase64(data.toUtf8())
-        );
+            );
         qDebug () << decoded;
         emit (ParserCore::decodedBase64(id, decoded));
         return true;

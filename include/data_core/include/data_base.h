@@ -2,6 +2,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlTableModel>
+#include <QSqlRecord>
 #include <QObject>
 #include <QString>
 #include <QDebug>
@@ -35,5 +37,5 @@ public:
 
 signals:
 
-
+    void errorConnection();
 };

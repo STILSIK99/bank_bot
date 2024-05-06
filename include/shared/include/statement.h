@@ -63,4 +63,8 @@ public:
     static QString* convertCodec(QByteArray *);
     std::map<QDate, DailyOperations *> dataByDate;
     bool init(QByteArray *);
+    void deleteData();
+
+    QDate startDate;
+    QDate finishDate;
 };

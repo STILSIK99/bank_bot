@@ -42,10 +42,32 @@ int main(int argc, char *argv[])
     //     qDebug() << "NO";
     // }
 
+    // QHash <QString, int> arr;
+
+    // arr["123"] = 1;
+    // arr["10"] = 2;
+    // arr["6435"] = 3;
+
+    // for(auto el : arr){
+    //     qDebug() << el;
+    // }
+
+    // std::list<int> arr = {1,2,3}, arr_1 = {4, 5, 6};
+    // arr.insert(arr.end(), arr_1.begin(), arr_1.end());
+    // for(auto el : arr){
+    //     qDebug() << el;
+    // }
+
+    // return 0;
+
+
     BotApp *app = new BotApp();
     if (!app->init()){
         return -1;
     }
+    app->start();
+
+
 
 
     return a.exec();

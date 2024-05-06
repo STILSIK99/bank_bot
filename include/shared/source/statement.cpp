@@ -21,6 +21,7 @@ QString Statement::getAccountNumber(){
 }
 
 bool Statement::init(QByteArray * data){
+    dataByDate = std::map<QDate, DailyOperations *>();
     auto *_data = convertCodec(data);
     auto start = STATEMENTS::FILE_START;
     if (data->size() < start.size()) return false;
@@ -40,6 +41,10 @@ bool Statement::init(QByteArray * data){
     currentRow = readBlock(currentRow, array, STATEMENTS::ACCOUNT_FINISH);
 
     while(currentRow < array.size()){
+        if (array[currentRow].isEmpty()) {
+            ++currentRow;
+            continue;
+        }
         if (TOOLS::comparePrefix(array[currentRow], STATEMENTS::RECORD_START)){
             currentRow = readBlock(currentRow, array, STATEMENTS::RECORD_FINISH);
         }
@@ -49,6 +54,10 @@ bool Statement::init(QByteArray * data){
         delete fields;
         throw EXCEPTIONS::StatementException(EXCEPTIONS::STATE_FORMAT);
     }
+
+
+    startDate = TOOLS::extractDateFromRecord(fields->at(STATEMENTS::DATE_START));
+    finishDate = TOOLS::extractDateFromRecord(fields->at(STATEMENTS::DATE_FINISH));
 
     return accounting();
 }
@@ -61,6 +70,9 @@ QString* Statement::convertCodec(QByteArray *data){
     return decoded;
 }
 
+void Statement::deleteData(){
+    // if (dataByDate) delete dataByDate;
+}
 
 //----------------------------------PRIVATE------------------------------------
 
@@ -88,21 +100,25 @@ bool Statement::accounting(){
         return false;
     }
 
-    auto    start = *dataByDate.begin(),
-            finish = *dataByDate.rbegin();
+    if (dataByDate.size() == 0){
+        return true;
+    }
+
+    auto    start = dataByDate.begin(),
+            finish = --(dataByDate.end());
     long long   all_add = 0,
                 all_minus = 0,
                 finish_sum = TOOLS::exctractSum(fields->at(STATEMENTS::FINISH_SUM));
-    start.second->start_sum = TOOLS::exctractSum(
+    start->second->start_sum = TOOLS::exctractSum(
         fields->at(STATEMENTS::START_SUM));
 
     for(auto it = dataByDate.begin(); it != dataByDate.end(); ++it){
-        static long long finish;
+        static long long _finish;
         if (it != dataByDate.begin()) {
-            it->second->start_sum = finish;
+            it->second->start_sum = _finish;
         }
-        finish = it->second->start_sum + it->second->changes;
-        it->second->finish_sum = finish;
+        _finish = it->second->start_sum + it->second->changes;
+        it->second->finish_sum = _finish;
         all_add += it->second->all_add;
         all_minus += it->second->all_minus;
     }
@@ -112,8 +128,8 @@ bool Statement::accounting(){
         qDebug() << "Accounting error";
         return false;
     }
-
-    return finish.second->finish_sum == finish_sum;
+    qDebug() << "Accounting finish";
+    return finish->second->finish_sum == finish_sum;
 
 }
 

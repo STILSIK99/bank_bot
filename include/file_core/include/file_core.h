@@ -16,9 +16,12 @@ class FileCore : public FileDownloader, public FileUnzip{
 
 private:
     QString dir2save;
+    bool makeDir(QString);
+    int id;
+    QString getFileName(const QString & path);
 
 public:
-    FileCore();
+    FileCore(int);
     ~FileCore();
 
     bool init(const QString &);
@@ -28,10 +31,14 @@ public slots:
 
     // void saveString2File(int id, QByteArray *data, QString path);
     void saveBytes2File(int id, QByteArray *data, QString path);
+    void saveHeader(QString path, QString data);
     void unzip(int, QByteArray *);
 
 signals:
     void notSaved(int);
-    void saved(int);
-    void parseFile(QByteArray *);
+    void saved(int, QString);
+    void parseFile(int, QByteArray *);
+
+
+    void process(int, QByteArray *); // id, QByteArray
 };

@@ -1,13 +1,10 @@
 #pragma once
 
-#pragma once
-
 #include <QTextCodec>
 #include <QString>
 #include <QJsonObject>
 #include <QDate>
 #include <map>
-
 
 namespace TOOLS{
 
@@ -34,6 +31,8 @@ long long exctractSum(const QString &);
 // const std::map<QString, QString> extractVars(Config *, const QString &);
 
 QString toString(std::vector<QString> &);
+
+QString hashToDigit(const QString &);
 
 }
 

@@ -3,6 +3,7 @@
 #include <QDate>
 
 #include <list>
+#include <QHash>
 
 #include "record.h"
 
@@ -24,6 +25,9 @@ struct DailyOperations{
 
     void addRecord(const Record *);
 
-    void merge(const DailyOperations &);
+    std::pair<
+        std::list<const Record *>,
+        std::list<const Record *>
+    > getChanges(const std::list<const Record *> &);
 
 };

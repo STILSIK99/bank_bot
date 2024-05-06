@@ -10,8 +10,10 @@ void ControlCore::getMessageCount(int count){
         nextSession = false;
     }
     session = std::vector<bool> (count, false);
+    headers = std::vector<QString>(count);
     messageCount = count;
-    emit(getMessageCount(count));
+    processed = count;
+    emit(getMessages(count));
 }
 
 void ControlCore::notFound(int id){
@@ -23,13 +25,24 @@ void ControlCore::notFound(int id){
     if (!--processed) initFinish();
 }
 
-void ControlCore::saved(int id){
+void ControlCore::saved(int id, QString path){
     if (id > session.size() || id < 1){
         //error
         return;
     }
     session[id - 1] = true;
+    if (id <= headers.size() && id > 0){
+        emit(saveHeader(path + ".hdr", headers[id - 1]));
+    }
+
     if (!--processed) initFinish();
+}
+
+void ControlCore::getHeader(int id, QString data){
+    if (id > headers.size() || id < 1){
+        return;
+    }
+    headers[id - 1] = data;
 }
 
 void ControlCore::startImap(){
@@ -41,6 +54,17 @@ void ControlCore::startImap(){
     }
     emit(updateListMessages());
 }
+
+void ControlCore::notSaved(int id){
+    if (id > session.size() || id < 1) {
+        //error
+        return;
+    }
+    session[id - 1] = false;
+    if (!--processed) initFinish();
+}
+
+
 //-----------------------------------PUBLIC------------------------------------
 
 ControlCore::ControlCore(){

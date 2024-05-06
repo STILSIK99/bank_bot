@@ -17,7 +17,7 @@ class ParserCore : public QObject{
     Q_OBJECT
 
 private:
-    QString pathToSave;
+    // QString pathToSave;
 
     bool decodeBase64(int id, const QString &);
     void parseHTML(const QString &);

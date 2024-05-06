@@ -4,7 +4,15 @@
 
 void SimpleMail::slotSendMessage(QString message){
     qDebug() << "SimpleMail::slotSendMessage";
-    if (!isEncrypted() || !isWritable()){
+    if (!isOpen()){
+        qDebug() << "Socket not opened.";
+        close();
+    }
+    if (!isWritable()) {
+        qDebug() << "Socket not writable.";
+        close();
+    }
+    if (!isEncrypted()){
         qDebug() << "Socket not secure.";
         close();
     }

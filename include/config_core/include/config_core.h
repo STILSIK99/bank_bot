@@ -17,6 +17,8 @@ public:
 
     QString getSaveDir();
 
+    int getPeriod();
+
 public slots:
 
 

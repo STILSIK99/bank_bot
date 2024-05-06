@@ -17,6 +17,7 @@ void IMAPClient::fetchAllMessages(int count){
 }
 
 void IMAPClient::connectToServer(){
+    Mail::slotConnectToServer();
     emit(Mail::slotExecute(
         new MailRequest(
             POST_SERVER::COMMANDS::LOGIN.arg(
@@ -49,9 +50,9 @@ void IMAPClient::parseReply(MailRequest * request, QString data){
         // fetchAllMessages();
     }
     if (command == POST_SERVER::COMMAND_NAMES::FETCH){
-        auto lastCommandWord = TOOLS::getWord(request->request, 3);
-        if (command == POST_SERVER::STRINGS::FETCH_BODY){
-            auto id = TOOLS::getWord(request->request, 2);
+        auto lastCommandWord = TOOLS::getWord(data, 4);
+        if (lastCommandWord == POST_SERVER::STRINGS::FETCH_BODY){
+            auto id = TOOLS::getWord(data, 2);
             if (!TOOLS::isDigit(id)){
                 //logger error
                 qDebug() << "error";
@@ -59,8 +60,8 @@ void IMAPClient::parseReply(MailRequest * request, QString data){
             }
             emit(saveBody(id.toInt(), data));
         }
-        if (command == POST_SERVER::STRINGS::FETCH_HEADER){
-            auto id = TOOLS::getWord(request->request, 2);
+        if (lastCommandWord == POST_SERVER::STRINGS::FETCH_HEADER){
+            auto id = TOOLS::getWord(data, 2);
             if (!TOOLS::isDigit(id)){
                 //logger error
                 qDebug() << "error";
@@ -88,9 +89,9 @@ void IMAPClient::flagDeleteMessage(int id){
 
 void IMAPClient::updateListMessages(){
     deleteAllSavedMessages();
-    emit(Mail::slotExecute(
-        new MailRequest(
-            POST_SERVER::COMMANDS::DELETE_MESSAGES)));
+    // emit(Mail::slotExecute(
+    //     new MailRequest(
+    //         POST_SERVER::COMMANDS::DELETE_MESSAGES)));
     emit(Mail::slotExecute(
         new MailRequest(
             POST_SERVER::COMMANDS::SELECT)));
@@ -144,6 +145,7 @@ void IMAPClient::fetchMessage(int id){
     emit(Mail::slotExecute(
         new MailRequest(
             POST_SERVER::COMMANDS::FETCH_BODY.arg(id))));
+
 
 }
 

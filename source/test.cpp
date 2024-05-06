@@ -27,11 +27,12 @@ bool TEST::testParseStatement(){
 }
 
 bool TEST::testDataBaseConnection(){
-    QString server = "127.0.0.1", user = "root", password = "root";
-    DataCore *dc = new DataCore;
-    auto result = dc->init(server, user, password);
-    delete dc;
-    return result;
+    // QString server = "127.0.0.1", user = "root", password = "root";
+    // DataCore *dc = new DataCore;
+    // auto result = dc->init(server, user, password);
+    // delete dc;
+    // return result;
+    return false;
 }
 
 bool TEST::testConfig(){

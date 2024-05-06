@@ -7,7 +7,7 @@ bool DataBase::query(const QString & request){ //внесение изменен
     QSqlQuery sql;
     if (!sql.exec(request)){
         qDebug() << sql.lastError().text();
-        qDebug() << sql.executedQuery();
+        qDebug() << request;
         return false;
     }
     return true;
@@ -22,7 +22,7 @@ bool DataBase::query(const QString & request, int col,
     QSqlQuery sql;
     if (!sql.exec(request)){
         qDebug() << sql.lastError().text();
-        qDebug() << sql.executedQuery();
+        qDebug() << request;
         return false;
     }
     if (!sql.first()) return true;

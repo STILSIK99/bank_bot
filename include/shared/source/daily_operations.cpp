@@ -23,6 +23,44 @@ DailyOperations::~DailyOperations(){
     }
 }
 
-void DailyOperations::merge(const DailyOperations & _slave){
+std::pair<
+    std::list<const Record *>,
+    std::list<const Record *>
+> DailyOperations::getChanges(const std::list<const Record *> & old){
+    //merge records
+    //this->data - master data
+    //old - slave data
+    QHash<std::pair<QString, QString>, std::list<const Record *>> buffer;
+    for(auto record : this->data){
+        auto p = std::make_pair(
+            record->hash_1.getFirst() + record->hash_1.getSecond(),
+            record->hash_2.getFirst() + record->hash_2.getSecond());
+        if (!buffer.contains(p)){
+            buffer[p] = {record};
+        } else {
+            buffer[p].emplace_back(record);
+        }
+    }
+    std::list<const Record *> addList, delList;
+    for(auto record : old){
+        auto p = std::make_pair(
+            record->hash_1.getFirst() + record->hash_1.getSecond(),
+            record->hash_2.getFirst() + record->hash_2.getSecond());
+        if (!buffer.contains(p)){
+            delList.emplace_back(record);
+        } else {
+            auto _list = buffer[p];
+            _list.pop_back();
+            if (_list.size() == 0){
+                buffer.remove(p);
+            }
+        }
 
+    }
+
+    for(auto _list : buffer){
+        addList.insert(addList.end(), _list.begin(), _list.end());
+    }
+
+    return make_pair(addList, delList);
 }

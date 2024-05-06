@@ -3,20 +3,57 @@
 #include <QString>
 #include <QDate>
 #include <QDebug>
+#include <QCryptographicHash>
 
 #include <map>
 
 #include "tools.h"
+#include "dc_variables.h"
+
+using Crypto = QCryptographicHash;
 
 namespace RECORDS{
 
-const QString DATE_IN       = "ДатаПоступило";
-const QString DATE_OUT      = "ДатаСписано";
-const QString OPERATION_SUM = "Сумма";
+    const QString DATE_IN       = "ДатаПоступило";
+    const QString DATE_OUT      = "ДатаСписано";
+    const QString OPERATION_SUM = "Сумма";
 
-// std::vector<QString> FIELDS{};
+    // std::vector<QString> FIELDS{};
+
+    const std::vector<QString> HASH_1 = {
+        "Дата", "ПлательщикБИК", "ПолучательБИК",
+        "ПолучательРасчСчет", "Сумма"
+    };
 
 }
+
+
+struct HashSum{
+    unsigned long long firstPart, secondPart;
+
+    HashSum(): firstPart(0), secondPart(0){};
+    HashSum(const QString & str){
+        // qDebug() << "HashSum::HashSum";
+        if (str.length() != 32){
+            qDebug() << "HashSum error.Length.";
+        } else {
+            bool res;
+            firstPart = str.left(16).toULongLong(&res, 16);
+            if (!res) qDebug() << "HashSum error.Value.";
+            secondPart = str.right(16).toULongLong(&res, 16);
+            if (!res) qDebug() << "HashSum error.Value.";
+        }
+    }
+
+    QString getFirst() const {
+        return QString::number(firstPart);
+    }
+
+    QString getSecond() const {
+        return QString::number(secondPart);
+    }
+
+};
 
 class Record{
     /*
@@ -28,12 +65,17 @@ class Record{
     bool direction; // true == + , false == -
     long long exctractSum () const;
 
+    QString toHash(const std::vector<QString> &);
+    void toHash_1();
+    void toHash_2();
+
 public:
     Record(std::map<QString, QString> *, bool);
     ~Record();
-    QString toHash_1();
-    QString toHash_2();
+    HashSum hash_1, hash_2;
     QDate getOperationDate () const;
     long long getSum() const ;
+    QString buildInsert(int) const;
+    QString buildDelete(int) const;
 
 };

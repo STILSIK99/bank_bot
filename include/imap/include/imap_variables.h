@@ -39,8 +39,8 @@ const QString LOGOUT = "LOGOUT";
 
 namespace STRINGS{
 const QString ACCESS = "[READ-WRITE]";
-const QString FETCH_BODY = "(BODY[TEXT])";
-const QString FETCH_HEADER = "(BODY[HEADER])";
+const QString FETCH_BODY = "(BODY[TEXT]";
+const QString FETCH_HEADER = "(BODY[HEADER]";
 const QString COMPLETED = "completed";
 }
 

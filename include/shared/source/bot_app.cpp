@@ -3,6 +3,14 @@
 
 //---------------------------------PUBLIC SLOTS--------------------------------
 
+void BotApp::errorDatabaseConnection(){
+    qDebug() << "Error database connection";
+}
+
+void BotApp::start(){
+    emit(startProcess());
+    timer->start(period);
+}
 
 
 //-----------------------------------PUBLIC------------------------------------
@@ -13,28 +21,73 @@ bool BotApp::init(){
     //     return false;
     // }
 
-    int threadCount = QThread::idealThreadCount() / 2;
+    int threadMaxCount = QThread::idealThreadCount() / 2;
 
     if (!initConfig()) return false;
-    if (!initDatabase()) return false;
+    auto dataThread = initDatabase();
+    connect(this, &BotApp::dataInit, dc, &DataCore::loadDataFromDB);
+    emit(dataInit());
+    // if (!initDatabase()) return false;
 
     int currentThread = 0;
     QString saveDir = cfg->getSaveDir();
+
+    timer = new QTimer;
+    connect(timer, &QTimer::timeout, this, &BotApp::startProcess);
 
     for(auto& account : cfg->getListEmails()){
         IMAPClient * imap = new IMAPClient(
             account->server,
             account->login,
             account->password);
+        imap->connectToServer();
 
-        FileCore * fc = new FileCore();
+        FileCore * fc = new FileCore(currentThread);
         fc->init(QString("%1/%2").arg(saveDir, account->login));
 
+        ParserCore * pc = new ParserCore();
 
+        ControlCore * cc = new ControlCore();
 
-        currentThread = (currentThread + 1) % threadCount;
+        connect(this, &BotApp::startProcess, cc, &ControlCore::startImap);
+        connect(cc, &ControlCore::updateListMessages, imap, &IMAPClient::updateListMessages);
+        connect(cc, &ControlCore::getMessages, imap, &IMAPClient::fetchAllMessages);
+        connect(imap, &IMAPClient::messageCount, cc, &ControlCore::getMessageCount);
+        connect(imap, &IMAPClient::saveBody, pc, &ParserCore::parseApplication);
+        connect(imap, &IMAPClient::saveHeader, cc, &ControlCore::getHeader);
+        connect(pc, &ParserCore::downloadHttp, fc, &FileCore::downloadFromUrl);
+
+        connect(fc, &FileCore::parseFile, pc, &ParserCore::parseFile); // after unzip
+        connect(fc, &FileCore::downloadError, cc, &ControlCore::notSaved);
+
+        connect(fc, &FileCore::saved, cc, &ControlCore::saved);
+        connect(cc, &ControlCore::saveHeader, fc, &FileCore::saveHeader);
+
+        connect(cc, &ControlCore::deleteMessage, imap, &IMAPClient::flagDeleteMessage);
+        connect(pc, &ParserCore::saveFile, fc, &FileCore::saveBytes2File);
+        connect(pc, &ParserCore::notFound, cc, &ControlCore::notFound);
+
+        connect(fc, &FileCore::process, dc, &DataCore::processBinary);
+        connect(pc, &ParserCore::processStatement, dc, &DataCore::processStatement);
+
+        QThread * thr;
+        if (currentThread < threadMaxCount){
+            thr = new QThread();
+            threads.emplace_back(thr);
+            thr->start();
+        } else {
+            thr = threads[currentThread % threadMaxCount];
+        }
+
+        imap->moveToThread(thr);
+        fc->moveToThread(thr);
+        pc->moveToThread(thr);
+        cc->moveToThread(thr);
+
+        ++currentThread;
     }
 
+    threads.emplace_back(dataThread);
 
     return true;
 }
@@ -71,6 +124,7 @@ bool BotApp::initConfig(){
     cfg = new ConfigCore(CONFIG::PATH);
     try{
         cfg->parseConfig();
+        period = cfg->getPeriod();
     } catch (std::exception e){
         qDebug() << e.what();
         delete cfg;
@@ -79,17 +133,16 @@ bool BotApp::initConfig(){
     return true;
 }
 
-bool BotApp::initDatabase(){
+QThread* BotApp::initDatabase(){
     auto connector = cfg->getDatabase();
-    qDebug() << "DB from config";
-    for(auto el : connector){
-        qDebug() << el ;
-    }
-    if (!db) db = new DataCore();
+    if (!dc) dc = new DataCore();
     auto thr = new QThread();
-    db->moveToThread(thr);
+    dc->moveToThread(thr);
     thr->start();
-    return db->init(connector[0], connector[1], connector[2]);
+    connect(this, &BotApp::startDatabase, dc, &DataCore::init);
+    connect(dc, &DataBase::errorConnection,this, &BotApp::errorDatabaseConnection);
+    emit(startDatabase(connector[0], connector[1], connector[2]));
+    return thr;
 }
 
 BotApp::~BotApp(){
@@ -104,5 +157,6 @@ BotApp::~BotApp(){
     }
 
     if (cfg) delete cfg;
-    if (db) delete db;
+    if (dc) delete dc;
+    if (timer) delete timer;
 }

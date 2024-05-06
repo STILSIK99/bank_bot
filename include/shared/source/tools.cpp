@@ -25,6 +25,8 @@ bool comparePrefix(const QString &a, const QString &b){
     for(int i = 0; i < std::min(a.length(), b.length()); ++i){
         if (a[i] != b[i]) return false;
     }
+    if (a.isEmpty() && !b.isEmpty()) return false;
+    if (!a.isEmpty() && b.isEmpty()) return false;
     return true;
 }
 
@@ -93,6 +95,11 @@ QString toString(std::vector<QString> &data){
     for(auto el : data)
         res += el + " ";
     return res;
+}
+
+
+QString hashToDigit(const QString &hash){
+    return "";
 }
 
 }

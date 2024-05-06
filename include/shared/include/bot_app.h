@@ -2,9 +2,14 @@
 
 #include <QObject>
 #include <QThread>
+#include <QDateTime>
+#include <QTimer>
 
-#include "config_core.h"
+#include <set>
+#include <utility>
+
 #include "control_core.h"
+#include "config_core.h"
 #include "data_core.h"
 #include "file_core.h"
 #include "imap_client.h"
@@ -21,10 +26,13 @@ class BotApp : public QObject{
 private:
 
     ConfigCore *cfg;
-    DataCore *db;
+    DataCore *dc;
+    QTimer *timer;
+    int period;
+
 
     bool initConfig();
-    bool initDatabase();
+    QThread* initDatabase();
     std::vector<QThread*> threads;
     std::vector<
         std::tuple<
@@ -39,10 +47,13 @@ public:
     bool init();
     ~BotApp();
 
-public slots:
 
+public slots:
+    void start();
+    void errorDatabaseConnection();
 
 signals:
-
-
+    void startDatabase(const QString &, const QString &,const QString &);
+    void startProcess();
+    void dataInit();
 };

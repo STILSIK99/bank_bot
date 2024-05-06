@@ -33,4 +33,9 @@ std::vector<QString> ConfigCore::getDatabase(){
     return data;
 }
 
+int ConfigCore::getPeriod(){
+
+    return parameters[CONFIG::SECTIONS::MAIL + "_" + CONFIG::REQUESTDELAY].toInt() * 1000;
+}
+
 //----------------------------------PRIVATE------------------------------------

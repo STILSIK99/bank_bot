@@ -166,6 +166,8 @@ add_executable(${PROJECT_NAME}
   ${PC_SOURCES}
   ${CFG_HEADERS}
   ${CFG_SOURCES}
+  ${CC_HEADERS}
+  ${CC_SOURCES}
 )
 
 #-----include Qt5 libs---------------------------------------
