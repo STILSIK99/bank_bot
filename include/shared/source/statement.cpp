@@ -5,10 +5,33 @@
 Statement::Statement(){}
 
 Statement::~Statement(){
+
+    delete fields;
+}
+
+void Statement::clearData(){
     for(auto el : dataByDate){
         delete el.second;
     }
-    delete fields;
+}
+
+QString Statement::getStartSum(){
+    qDebug() << "Statement::getStartSum";
+    if (fields->count(STATEMENTS::START_SUM)){
+        return fields->at(STATEMENTS::START_SUM);
+    }
+    qDebug() << "Start sum not found.";
+    return "";
+}
+QString Statement::getStartDate(){
+    qDebug() << "Statement::getStartDate";
+    if (fields->count(STATEMENTS::START_DATE)){
+        QDate date = TOOLS::extractDateFromRecord(
+            fields->at(STATEMENTS::START_DATE));
+        return TOOLS::dateForDataBase(date);
+    }
+    qDebug() << "Start date not found.";
+    return "";
 }
 
 QString Statement::getAccountNumber(){
@@ -56,8 +79,8 @@ bool Statement::init(QByteArray * data){
     }
 
 
-    startDate = TOOLS::extractDateFromRecord(fields->at(STATEMENTS::DATE_START));
-    finishDate = TOOLS::extractDateFromRecord(fields->at(STATEMENTS::DATE_FINISH));
+    startDate = TOOLS::extractDateFromRecord(fields->at(STATEMENTS::START_DATE));
+    finishDate = TOOLS::extractDateFromRecord(fields->at(STATEMENTS::FINISH_DATE));
 
     return accounting();
 }

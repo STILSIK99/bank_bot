@@ -29,8 +29,8 @@ const QString RECORD_FINISH     = "КонецДокумента";
 const QString ACCOUNT_NUMBER    = "РасчСчет";
 const QString PAYER_NUMBER      = "ПлательщикСчет";
 
-const QString DATE_START        = "ДатаНачала";
-const QString DATE_FINISH       = "ДатаКонца";
+const QString START_DATE        = "ДатаНачала";
+const QString FINISH_DATE       = "ДатаКонца";
 
 const QString START_SUM         = "НачальныйОстаток";
 const QString FINISH_SUM        = "КонечныйОстаток";
@@ -60,10 +60,13 @@ public:
     Statement();
     ~Statement();
     QString getAccountNumber();
+    QString getStartSum();
+    QString getStartDate();
     static QString* convertCodec(QByteArray *);
     std::map<QDate, DailyOperations *> dataByDate;
     bool init(QByteArray *);
     void deleteData();
+    void clearData();
 
     QDate startDate;
     QDate finishDate;

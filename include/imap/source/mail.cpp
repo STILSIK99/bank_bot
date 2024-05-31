@@ -10,19 +10,19 @@ void Mail::slotExecute(MailRequest * request){
 }
 
 void Mail::slotGetReply(QString partReply){
-    qDebug() << "Mail::slotGetReply";
+    // qDebug() << "Mail::slotGetReply";
     reply += partReply;
     if ((!isLastLine(reply)) && (currentRequest->id)) return;
     commandQue.pop_front();
     isProcess = false;
-    qDebug() << "Size of message - " << reply.length();
-    qDebug() << reply;
+    // qDebug() << "Size of message - " << reply.length();
+    // qDebug() << reply;
     emit(Mail::getReply(currentRequest, reply));
     executeNext();
 }
 
 void Mail::slotConnectToServer(){
-    qDebug() << "Mail::slotConnectToServer";
+    // qDebug() << "Mail::slotConnectToServer";
     isProcess = true;
     currentRequest = new MailRequest(0, "CONNECT");
     commandQue.push_back(currentRequest);

@@ -1,75 +1,6 @@
 #include "data_core.h"
 
 //--------------------------------PUBLIC SLOTS---------------------------------
-
-//-----------------------------------PUBLIC------------------------------------
-DataCore::DataCore(){
-
-}
-
-void DataCore::processStatement(Statement * state){
-	auto number = state->getAccountNumber();
-    if (!storage.count(number)){
-        storage[number] = std::map<QDate, DailyOperations *>();
-    }
-
-    auto [addList, delList] = DataStorage::dailyComparsion(
-        state->dataByDate,
-        storage[number],
-        state->startDate,
-        state->finishDate
-    );
-
-    DataStorage::deleteRecords(number, delList);
-    DataStorage::insertRecords(number, addList);
-
-    if (!DataStorage::needBefore(storage[number], state->dataByDate)){
-        qDebug() << "Need statement for number " << number
-                 << "before date " << state->startDate;
-    }
-
-    if (!DataStorage::needAfter(storage[number], state->dataByDate)){
-        qDebug() << "Need statement for number " << number
-                 << "after date " << state->finishDate;
-    }
-
-    //write new statement
-    DataStorage::recalc(
-        storage[number], state->dataByDate,
-        state->startDate, state->finishDate);
-	delete state;
-}
-
-void DataCore::processBinary(int id, QByteArray * data){
-    Statement * state = new Statement;
-    auto result = state->init(data);
-    delete data;
-    if (!result){
-        qDebug() << "Statement not init";
-        delete state;
-        return;
-    }
-    processStatement(state);
-}
-
-void DataCore::loadDataFromDB(){
-    DataStorage::loadAccounts();
-    // loadData();
-}
-
-
-// void DataCore::processStatement(Statement *state){
-//     if (!storage.count(state->getAccountNumber())){
-//         storage[state->getAccountNumber()] = state->dataByDate;
-//         return ;
-//     }
-//     for(auto &date : state->dataByDate){
-
-//     }
-// }
-
-//-----------------------------------PUBLIC------------------------------------
-
 void DataCore::init(const QString & _s,const QString & _u,const QString & _p){
     if (!DataBase::connect(_s, _u, _p)){
         qDebug() << "DataCore::init - not connected";
@@ -93,10 +24,78 @@ void DataCore:: test(){
     }
 
 }
+
+//-----------------------------------PUBLIC------------------------------------
+DataCore::DataCore(){
+
+}
+
+void DataCore::processStatement(Statement * state){
+    QString number = state->getAccountNumber();
+    int accountId = DataStorage::getAccount(number);
+    if (!storage.count(accountId)){
+        storage[accountId] = std::map<QDate, DailyOperations *>();
+    }
+
+    QString startSum = "0.00", startDate = "9999-12-31";
+    exctractStartProperties(state, startSum, startDate);
+    DataStorage::updateStartSum(accountId, startSum, startDate);
+
+    auto [addList, delList] = DataStorage::dailyComparsion(
+        state->dataByDate,
+        storage[accountId],
+        state->startDate,
+        state->finishDate
+    );
+
+
+    DataStorage::deleteRecords(accountId, delList);
+    DataStorage::insertRecords(accountId, addList);
+
+    if (!DataStorage::needBefore(storage[accountId], state->dataByDate)){
+        qDebug() << "Need statement for number " << number
+                 << "before date " << state->startDate;
+    }
+
+    if (!DataStorage::needAfter(storage[accountId], state->dataByDate)){
+        qDebug() << "Need statement for number " << number
+                 << "after date " << state->finishDate;
+    }
+
+    //write new statement
+    DataStorage::recalc(
+        state->dataByDate, storage[accountId],
+        state->startDate, state->finishDate);
+	delete state;
+}
+
+void DataCore::processBinary(int id, QByteArray * data){
+    Statement * state = new Statement;
+    auto result = state->init(data);
+    delete data;
+    if (!result){
+        qDebug() << "Statement not init";
+        delete state;
+        return;
+    }
+    processStatement(state);
+}
+
+void DataCore::loadDataFromDB(){
+    DataStorage::loadAccounts();
+    DataStorage::loadStartSums();
+    DataStorage::loadDailyOperations();
+}
+
 //----------------------------------PRIVATE------------------------------------
 
-
-
+void DataCore::exctractStartProperties(Statement * state,
+        QString & sum, QString & date)
+{
+    if (!state) return;
+    sum = state->getStartSum();
+    date = state->getStartDate();
+}
 
 
 

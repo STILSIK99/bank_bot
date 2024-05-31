@@ -33,7 +33,7 @@ bool BotApp::init(){
     QString saveDir = cfg->getSaveDir();
 
     timer = new QTimer;
-    connect(timer, &QTimer::timeout, this, &BotApp::startProcess);
+    connect(timer, &QTimer::timeout, this, &BotApp::start);
 
     for(auto& account : cfg->getListEmails()){
         IMAPClient * imap = new IMAPClient(

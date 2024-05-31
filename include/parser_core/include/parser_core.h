@@ -23,7 +23,8 @@ private:
     void parseHTML(const QString &);
 
     QString exctractBase64(QStringList & lines, int leftPos, int rightPos);
-    QString exctractUrl(QStringList & lines, int left);
+    QString getUrlFromElement(const QString &);
+    QString exctractUrl(QString & data, int position);
 
 public:
     ParserCore();

@@ -4,46 +4,44 @@
 #include <vector>
 #include "tools.h"
 
-using dailys = std::map<QDate, DailyOperations *>;
+using Dailys = std::map<QDate, DailyOperations *>;
+using Changes = std::pair<std::list<const Record *>,std::list<const Record *>>;
 
 class DataStorage : public DataBase{
     Q_OBJECT
 
 private:
-    std::unordered_map<QString, int> accountsNumberId;
-    int getAccount(const QString &);
-
+    void updateStartSums();
 
 public:
-
-
     static std::vector<QString> fields;
     void initFields();
     bool createTables();
     void insertStartData();
 
     int insertAccountByNumber(const QString &);
-    void deleteRecords(const QString &, std::list<const Record *> &);
-    void insertRecords(const QString &, std::list<const Record *> &);
+    void deleteRecords(const int, std::list<const Record *> &);
+    void insertRecords(const int, std::list<const Record *> &);
+    void updateStartSum(const int, const QString &, const QString &);
 
-    static void recalc(const dailys &slave,
-                dailys &master,
+    static void recalc(const Dailys &slave,
+                Dailys &master,
                 const QDate &start, const QDate &finish);
 
-    static std::pair<
-        std::list<const Record *>,
-        std::list<const Record *>
-        > dailyComparsion(
-        const dailys & master,
-        dailys & slave,
-        const QDate & start, const QDate & finish
-        );
+    static Changes dailyComparsion(const Dailys & master,
+        Dailys & slave,const QDate & start, const QDate & finish);
 
-    bool needBefore (dailys &slave, dailys &master);    //slave - data in storage
-    bool needAfter (dailys &slave, dailys &master);     //master - data in statement
+    bool needBefore (Dailys &slave, Dailys &master);    //slave - data in storage
+    bool needAfter (Dailys &slave, Dailys &master);     //master - data in statement
 
 protected:
+    int getAccount(const QString &);
+    std::map<int, std::map<QDate, DailyOperations*> > storage;
+    std::unordered_map<QString, int> accountsNumberId;
+    std::map<int, std::pair<QDate, long long>> startSumsId;
     void loadAccounts();
+    void loadStartSums();
+    void loadDailyOperations();
 
 public slots:
 

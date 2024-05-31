@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <set>
+#include <vector>
 
 namespace FILE_MODULE{
 
@@ -43,8 +44,9 @@ namespace PARSER{
 
     namespace STRINGS{
         const QString BASE64 = "base64";
-        const QString URL2FILE = "<a href=3D\"https";
+        const std::vector<QString> URL2FILE = {
+            "<a href=3D\"https",
+            "<a title=\"Скачать выписку\" target=\"_blank\" href=\"https:"
+        };
     }
-
-
 };

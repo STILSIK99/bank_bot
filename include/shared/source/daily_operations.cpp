@@ -15,6 +15,17 @@ void DailyOperations::addRecord(const Record * record){
     changes += record->getSum();
     if (sum > 0) all_add += sum;
     else all_minus += sum;
+    finish_sum += sum;
+}
+
+void DailyOperations::setFinishSum(const long long sum){
+    finish_sum = sum;
+    start_sum = sum - changes;
+}
+
+void DailyOperations::addStartSum(const long long sum){
+    start_sum += sum;
+    finish_sum += sum;
 }
 
 DailyOperations::~DailyOperations(){

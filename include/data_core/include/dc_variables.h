@@ -5,7 +5,18 @@
 #include <map>
 namespace DATABASE{
 
-
+    enum POSITIONS{
+        ACCOUNT_ID = 0,
+        HASH_1_1 = 1,
+        HASH_1_2 = 2,
+        HASH_2_1 = 3,
+        HASH_2_2 = 4,
+        INPUT_DATE = 10,
+        OUTPUT_DATE = 11,
+        OUTPUT_NUMBER = 33,
+        INPUT_NUMBER = 48,
+        OPERATION_SUM = 52
+    };
 
     namespace REQUESTS{
         const std::list<QString> TABLES = {
@@ -49,7 +60,13 @@ namespace DATABASE{
             "	Field_45 DECIMAL(5,0), 	Field_46 DATE,"
             "	Field_47 DECIMAL(2,0), 	Field_48 DECIMAL(16,2) NOT NULL,"
             "	Field_49 VARCHAR(100), 	Field_50 VARCHAR(100),"
-            "	Field_51 VARCHAR(100) );"
+            "	Field_51 VARCHAR(100) );",
+
+            "CREATE TABLE IF NOT EXISTS STARTSUMS("
+            "	Account_id INT REFERENCES ACCOUNTS(Id),"
+            "   StartSum DECIMAL(16,2) NOT NULL,"
+            "	StartDate DATE NOT NULL"
+            ");"
         };
 
         const std::list<QString> INSERTIONS = {
@@ -92,7 +109,13 @@ namespace DATABASE{
                                "and Account_id = %5 LIMIT 1;";
         const QString SELECT_ACCOUNTS = "SELECT Account, Id FROM ACCOUNTS;";
         const QString CREATE_DATABASE = "CREATE DATABASE IF NOT EXISTS %1";
-    };
+
+        const QString INSERT_START_SUM = "INSERT INTO STARTSUMS VALUES (%1, 00.00, '9999-12-31');";
+        const QString UPDATE_START_SUM = "UPDATE STARTSUMS SET StartSum = %2, StartDate = '%3' "
+                                         "WHERE Account_id = %1 AND StartDate >= '%3';";
+        const QString SELECT_START_SUMS = "SELECT Account_id, StartSum, StartDate FROM STARTSUMS;";
+        const QString SELECT_DAILY_OPERATIONS = "SELECT * FROM DATA;";
+};
 
     const QString DRIVER = "QMARIADB";
     const QString DATABASE_NAME = "bank_bot";
@@ -116,6 +139,7 @@ namespace DATABASE{
         "СрокПлатежа",      "СтатусСоставителя",    "Сумма",                //45-47
         "УсловиеОплаты1",   "УсловиеОплаты2",       "УсловиеОплаты3"        //48-50
     };
+
     const std::vector<bool> IS_DIGIT_FIELD = {
         0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 0, 0, 0, 0, 1, 1, 0, 0,

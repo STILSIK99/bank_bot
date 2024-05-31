@@ -41,7 +41,10 @@ void ParserCore::parseApplication(int id, QString data){
             continue;
         }
         if (sep == PARSER::SEPARATOR_TYPE::HTML){
-            auto url = exctractUrl(arr, i);
+            int position = 0;
+            for(int j = 0; j < i; ++j)
+                position += arr[j].length();
+            auto url = exctractUrl(data, position);
             emit(downloadHttp(id, url));
             qDebug() << url;
             return;
@@ -54,6 +57,7 @@ void ParserCore::parseFile(int id, QByteArray *data){
     try{
         if (!state->init(data)){
             emit(notFound(id));
+            state->clearData();
             delete state;
             delete data;
         } else {
@@ -109,30 +113,94 @@ QString ParserCore::exctractBase64(QStringList & lines,
     return result;
 }
 
-QString ParserCore::exctractUrl(QStringList & lines, int left){
-    for(int i = lines.size() - 1; i > left; --i){
-        if (!TOOLS::checkStart(lines[i], PARSER::STRINGS::URL2FILE)){
+QString ParserCore::getUrlFromElement(const QString & text){
+    QString result = "";
+    int left_pos = 0, right_pos = 0;
+    bool isHref = false;
+    for(int i = 0; i < (text.length() - 4); ++i){
+        if (text.mid(i, 4) == "href"){
+            isHref = 1;
             continue;
         }
-        QString result = lines[i] + "\r\n" +lines[i + 1];
-        result = result.replace("=\r\n", "");
-        int _left = 0, _right = 0;
-        for(int i = 0; i < result.size(); ++i){
-            if (result[i] == '"') {
-                _left = i + 1;
+        if (isHref){
+            if (text[i] == '"' &&
+                text[i + 1] == 'h' &&
+                left_pos == 0){
+                left_pos = i + 1;
+                continue;
+            }
+            if (text[i] == '"' &&
+                left_pos != 0){
+                right_pos = i;
+                result = text.mid(left_pos, right_pos - left_pos);
                 break;
             }
         }
-        for(int i = _left; i < result.size(); ++i){
-            if (result[i] == '"') {
-                _right = i - 1;
-                break;
-            }
-        }
-        return result.mid(_left, _right - _left + 1);
     }
-    return "";
+    result = result.replace("=\r\n", "");
+    auto arr = result.split('/');
+    bool isSber = false, isDownload = false;
+    if (arr.size() > 4){
+        if (arr[2].split('.')[1] == "sberbank"){
+            isSber = true;
+        }
+        for(int i = 3; i < arr.size(); ++i){
+            if (arr[i] == "download"){
+                isDownload = true;
+            }
+        }
+    }
+    if (isSber && isDownload){
+        return result;
+    } else return "";
 }
+
+QString ParserCore::exctractUrl(QString & data, int position){
+    QString result = "";
+    int left_pos = 0, right_pos = 0;
+    for(int i = position; i < (data.length() - 4); ++i){
+        if (data.mid(i, 3) == "<a "){
+            left_pos = i;
+        }
+        if (data.mid(i, 4) == "</a>"){
+            right_pos = i;
+            result = getUrlFromElement(data.mid(left_pos, right_pos - left_pos + 1));
+            if (result != ""){
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+
+// QString ParserCore::exctractUrl(QStringList & lines, int left){
+//     QString url = "";
+//     for(int i = lines.size() - 1; i > left; --i){
+//         for(auto URL : PARSER::STRINGS::URL2FILE){
+//             if (!TOOLS::checkStart(lines[i], URL)){
+//                 continue;
+//             }
+//             QString result = lines[i] + "\r\n" +lines[i + 1];
+//             result = result.replace("=\r\n", "");
+//             int _left = 0, _right = 0;
+//             for(int i = 0; i < result.size(); ++i){
+//                 if (result[i] == '"') {
+//                     _left = i + 1;
+//                     break;
+//                 }
+//             }
+//             for(int i = _left; i < result.size(); ++i){
+//                 if (result[i] == '"') {
+//                     _right = i - 1;
+//                     break;
+//                 }
+//             }
+//             url = result.mid(_left, _right - _left + 1);
+//         }
+//     }
+//     return "";
+// }
 
 
 bool ParserCore::decodeBase64(int id, const QString & data){

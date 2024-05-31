@@ -153,7 +153,7 @@ void IMAPClient::parseSelectMessage(const QString & text){
     // извлекает информацию о кол-ве писем на почтовом сервере
     qDebug() << "IMAPClient::parseSelectMessage";
     auto lines = text.split("\r\n");
-    qDebug() << lines[1];
+    // qDebug() << lines[1];
     auto count = TOOLS::getWord(lines[1], 2);
     if (!TOOLS::isDigit(count)){
         //logger error

@@ -13,9 +13,9 @@
   },
   "db": {
       "Database": {
-        "server": "mariadb.redway.ru",
-        "login": "mariadb",
-        "password": "sIFkRZwWyEAjIuuckcaMjG7mZKcGKmKz",
+        "server": "127.0.0.1",
+        "login": "root",
+        "password": "root",
         "driver": "QMARIADB",
         "database": "mariadb"
       }

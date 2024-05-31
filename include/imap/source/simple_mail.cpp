@@ -20,8 +20,8 @@ void SimpleMail::slotSendMessage(QString message){
 }
 
 void SimpleMail::slotReadyRead(){
-    qDebug() << "SimpleMail::slotReadyRead";
-    qDebug() << "Bytes available " << bytesAvailable();
+    // qDebug() << "SimpleMail::slotReadyRead";
+    // qDebug() << "Bytes available " << bytesAvailable();
     if (!isReadable())  return;
     auto message = QString::fromUtf8(readAll());
     emit (recieve(message));

@@ -46,6 +46,7 @@ void ControlCore::getHeader(int id, QString data){
 }
 
 void ControlCore::startImap(){
+    qDebug() << "ControlCore::startImap";
     // получение сигнала, чтобы запустить новую сессию
     if (!isSessionFinished){
         // ожидание следущей сессии

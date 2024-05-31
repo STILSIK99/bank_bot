@@ -24,6 +24,8 @@ struct DailyOperations{
     ~DailyOperations();
 
     void addRecord(const Record *);
+    void addStartSum(const long long);
+    void setFinishSum(const long long);
 
     std::pair<
         std::list<const Record *>,

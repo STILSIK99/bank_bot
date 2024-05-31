@@ -44,6 +44,9 @@ struct HashSum{
             if (!res) qDebug() << "HashSum error.Value.";
         }
     }
+    HashSum(unsigned long long f, unsigned long long s):
+        firstPart(f), secondPart(s)
+    {}
 
     QString getFirst() const {
         return QString::number(firstPart);
@@ -70,7 +73,7 @@ class Record{
     void toHash_2();
 
 public:
-    Record(std::map<QString, QString> *, bool);
+    Record(std::map<QString, QString> *, bool); //fields, direction
     ~Record();
     HashSum hash_1, hash_2;
     QDate getOperationDate () const;

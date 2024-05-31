@@ -4,10 +4,13 @@
 //-----------------------------------PUBLIC------------------------------------
 
 Record::Record(std::map<QString, QString> * _data, bool _direct) {
+    // true == + , false == -
     fields = _data;
     direction = _direct;
     toHash_1();
     toHash_2();
+    (*fields)[RECORDS::OPERATION_SUM] =
+        (_direct ? "+" : "-") + _data->at(RECORDS::OPERATION_SUM);
 }
 
 Record::~Record(){
@@ -23,8 +26,8 @@ QDate Record::getOperationDate() const {
 }
 
 long long Record::getSum() const {
-    auto sum = exctractSum();
-    if (!direction){
+    long long sum = exctractSum();
+    if (!direction && sum > 0){
         sum *= -1;
     }
     return sum;
